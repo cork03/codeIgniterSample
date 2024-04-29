@@ -1,4 +1,4 @@
-FROM php:8.1-fpm-alpine
+FROM php:7.1-fpm-alpine
 
 RUN apk update \
     && apk upgrade \
@@ -6,16 +6,16 @@ RUN apk update \
     && apk add --update nodejs npm \
      sudo \
     # php の拡張モジュール
-    && docker-php-ext-install pdo_mysql mysqli \
+    && docker-php-ext-install pdo_mysql \
     # composer install
     # installer のダウンロード
     && php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
     # sha384の確認
-    && php -r "if (hash_file('sha384', 'composer-setup.php') === '55ce33d7678c5a611085589f1f3ddf8b3c52d662cd01d4ba75c0ee0459970c2200a51f492d557530c71c15d8dba01eae') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
+    && php -r "if (hash_file('sha384', 'composer-setup.php') === 'dac665fdc30fdd8ec78b38b9800061b4150413ff2e3b6f88543c636f7cd84f6db9189d43a81e5503cda447da73c7e5b6') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
     # インストーラーの実行
-    && php composer-setup.php --version=2.3.0 \
+    && php composer-setup.php --version=2.0.0 \
     # インストーラーの削除
     && php -r "unlink('composer-setup.php');" \
     && mv composer.phar /usr/local/bin/composer
 
-WORKDIR /var/www/html
+WORKDIR /var/www/app
