@@ -1,0 +1,35 @@
+version: "3"
+services:
+  php:
+    build:
+        context: .
+        dockerfile: ./docker/php/Dockerfile
+    volumes:
+      - "./html:/var/www/html"
+    ports:
+      - "${PHP_PORT}:8000"
+      - 5173:5173
+  nginx:
+    build:
+      context: .
+      dockerfile: ./docker/nginx/Dockerfile
+    volumes:
+      - "./docker/nginx/nginx.conf:/etc/nginx/nginx.conf"
+      - "./docker/nginx/conf.d:/etc/nginx/conf.d"
+    ports:
+      - "${NGINX_PORT}:80"
+  mysql:
+    image: "mysql:8.0"
+    volumes:
+      - "./docker/mysql/var/log/mysql:/var/lib/mysql:delegated"
+      # confファイルを書き換える場合は/etc/mysql/conf.d配下に設定ファイルをvolume
+      - "./my/custom:/etc/mysql/conf.d"
+      # コンテナ起動時に行いたいsqlコマンドの実行
+      - ./docker/mysql/initdb.d:/docker-entrypoint-initdb.d
+    ports:
+      - ${MYSQL_PORT}:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: infra_pj
+      MYSQL_USER: infra_pj
+      MYSQL_PASSWORD: infra_pj
